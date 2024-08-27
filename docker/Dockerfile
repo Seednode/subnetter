@@ -39,5 +39,5 @@ COPY --from=build --chown=root:root --chmod=0005 /src/$app/$app /$app
 EXPOSE 8080
 
 # run application
-ENTRYPOINT ["/trivia"]
+ENTRYPOINT ["/subnetter"]
 CMD ["--all","--verbose"]
