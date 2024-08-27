@@ -44,13 +44,6 @@ func toDottedDecimal(u uint32) string {
 	return fmt.Sprintf("%d.%d.%d.%d", a[0], a[1], a[2], a[3])
 }
 
-// func toBitString(s uint32) string {
-// 	a := make([]byte, 4)
-// 	binary.BigEndian.PutUint32(a, s)
-
-// 	return fmt.Sprintf("%s | %s", toBinary(a), toDottedDecimal((a)))
-// }
-
 func calculateV4Subnet(cidr string, errorChannel chan<- error) string {
 	ip, net, err := net.ParseCIDR(cidr)
 	if err != nil {
@@ -107,5 +100,5 @@ func serveV4Subnet(errorChannel chan<- error) httprouter.Handle {
 }
 
 func registerV4Subnetting(mux *httprouter.Router, errorChannel chan<- error) {
-	mux.GET("/ip4/*subnet", serveV4Subnet(errorChannel))
+	mux.GET("/v4/*subnet", serveV4Subnet(errorChannel))
 }
