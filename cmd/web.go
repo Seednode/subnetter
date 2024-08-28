@@ -114,7 +114,7 @@ func servePage() error {
 		registerProfile(mux)
 	}
 
-	registerV4Subnetting(mux, errorChannel)
+	registerSubnetting(mux, errorChannel)
 
 	registerUsage(mux, errorChannel)
 
