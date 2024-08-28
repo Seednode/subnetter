@@ -5,7 +5,6 @@ Copyright © 2024 Seednode <seednode@seedno.de>
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -26,17 +25,13 @@ func toDottedDecimal(b []byte) string {
 func calculateV4Subnet(cidr string, errorChannel chan<- error) string {
 	ip, net, err := net.ParseCIDR(cidr)
 	if err != nil {
-		errorChannel <- err
-
-		return "Invalid CIDR address\n"
+		return "Not valid CIDR notation.\n"
 	}
 
 	as4 := ip.To4()
 
 	if as4 == nil {
-		errorChannel <- errors.New("not an ipv4 address")
-
-		return ""
+		return "Not a valid IPv4 address.\n"
 	}
 
 	first, err := and(as4, net.Mask)
@@ -53,11 +48,12 @@ func calculateV4Subnet(cidr string, errorChannel chan<- error) string {
 		return ""
 	}
 
-	return fmt.Sprintf("Address: %s | %s\nMask:    %s | %s\nFirst:   %s | %s\nLast:    %s | %s\n",
-		toBinary(as4), as4.String(),
+	return fmt.Sprintf("Address: %s | %s\nMask:    %s | %s\nFirst:   %s | %s\nLast:    %s | %s\nTotal:   %s\n",
+		toBinary(as4), as4,
 		toBinary(net.Mask), toDottedDecimal(net.Mask),
 		toBinary(first), first,
-		toBinary(last), last)
+		toBinary(last), last,
+		subtract(first, last))
 }
 
 func serveV4Subnet(errorChannel chan<- error) httprouter.Handle {

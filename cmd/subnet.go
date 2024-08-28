@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"math/big"
 	"net"
 	"strings"
 
@@ -24,6 +25,25 @@ func toBinary(b []byte) string {
 	}
 
 	return s.String()
+}
+
+func subtract(a, b []byte) string {
+	var c, d, e big.Int
+
+	c.SetBytes(a)
+	d.SetBytes(b)
+
+	comp := c.Cmp(&d)
+	switch comp {
+	case -1:
+		e.Sub(&d, &c)
+	case 0:
+		e = *big.NewInt(0)
+	case 1:
+		e.Sub(&c, &d)
+	}
+
+	return e.Add(&e, big.NewInt(1)).String()
 }
 
 func and(a, b []byte) (net.IP, error) {

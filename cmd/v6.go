@@ -29,9 +29,13 @@ func toColonedHex(b []byte) string {
 func calculateV6Subnet(cidr string, errorChannel chan<- error) string {
 	ip, net, err := net.ParseCIDR(cidr)
 	if err != nil {
-		errorChannel <- err
+		return "Not valid CIDR notation.\n"
+	}
 
-		return "Invalid CIDR address\n"
+	as4 := ip.To4()
+
+	if as4 != nil {
+		return "Not a valid IPv6 address.\n"
 	}
 
 	first, err := and(ip, net.Mask)
@@ -48,11 +52,12 @@ func calculateV6Subnet(cidr string, errorChannel chan<- error) string {
 		return ""
 	}
 
-	return fmt.Sprintf("Address: %s | %s | %s\nMask:    %s | %s | %s\nFirst:   %s | %s | %s\nLast:    %s | %s | %s\n",
-		toBinary(ip), toColonedHex(ip), ip.String(),
-		toBinary(net.Mask), toColonedHex(net.Mask), net.Mask.String(),
-		toBinary(first), toColonedHex(first), first.String(),
-		toBinary(last), toColonedHex(last), last.String())
+	return fmt.Sprintf("Address: %s | %s | %s\nMask:    %s | %s | %s\nFirst:   %s | %s | %s\nLast:    %s | %s | %s\nTotal:   %s\n",
+		toBinary(ip), toColonedHex(ip), ip,
+		toBinary(net.Mask), toColonedHex(net.Mask), net.Mask,
+		toBinary(first), toColonedHex(first), first,
+		toBinary(last), toColonedHex(last), last,
+		subtract(first, last))
 }
 
 func serveV6Subnet(errorChannel chan<- error) httprouter.Handle {
