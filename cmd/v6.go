@@ -14,6 +14,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+func multiFormat(b []byte) string {
+	return fmt.Sprintf("%s | %s | %s", toBinary(b), toColonedHex(b), b)
+}
+
 func toColonedHex(b []byte) string {
 	if len(b) != 16 {
 		return ""
@@ -52,11 +56,11 @@ func calculateV6Subnet(cidr string, errorChannel chan<- error) string {
 		return ""
 	}
 
-	return fmt.Sprintf("Address: %s | %s | %s\nMask:    %s | %s | %s\nFirst:   %s | %s | %s\nLast:    %s | %s | %s\nTotal:   %s\n",
-		toBinary(ip), toColonedHex(ip), ip,
-		toBinary(net.Mask), toColonedHex(net.Mask), net.Mask,
-		toBinary(first), toColonedHex(first), first,
-		toBinary(last), toColonedHex(last), last,
+	return fmt.Sprintf("Address: %s\nMask:    %s\nFirst:   %s\nLast:    %s\nTotal:   %s\n",
+		multiFormat(ip),
+		multiFormat(net.Mask),
+		multiFormat(first),
+		multiFormat(last),
 		subtract(first, last))
 }
 
